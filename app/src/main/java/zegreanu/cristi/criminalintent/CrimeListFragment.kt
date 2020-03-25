@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CrimeListFragment : Fragment() {
     private lateinit var crimeRecyclerView: RecyclerView
@@ -63,7 +65,7 @@ class CrimeListFragment : Fragment() {
         fun bind(crimeItem: Crime) {
             crime = crimeItem
             titleTextView.text = crime.title
-            dateTextView.text = crime.date.toString()
+            dateTextView.text = SimpleDateFormat("EE, MMM dd, yyyy", Locale.getDefault()).format(crime.date)
             solvedImageView.visibility = if (crime.solved) View.VISIBLE else View.GONE
         }
     }
