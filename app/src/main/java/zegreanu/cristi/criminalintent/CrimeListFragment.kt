@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -46,6 +47,7 @@ class CrimeListFragment : Fragment() {
 
         private var titleTextView: TextView = itemView.findViewById(R.id.crime_title)
         private var dateTextView: TextView = itemView.findViewById(R.id.crime_date)
+        private var solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
         private lateinit var crime: Crime
 
         init {
@@ -62,6 +64,7 @@ class CrimeListFragment : Fragment() {
             crime = crimeItem
             titleTextView.text = crime.title
             dateTextView.text = crime.date.toString()
+            solvedImageView.visibility = if (crime.solved) View.VISIBLE else View.GONE
         }
     }
 
