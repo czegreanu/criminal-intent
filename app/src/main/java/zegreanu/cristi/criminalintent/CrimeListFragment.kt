@@ -1,12 +1,12 @@
 package zegreanu.cristi.criminalintent
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,12 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 class CrimeListFragment : Fragment() {
     private lateinit var crimeRecyclerView: RecyclerView
     private lateinit var adapter: CrimeAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let { }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,19 +24,18 @@ class CrimeListFragment : Fragment() {
 
         crimeRecyclerView = rootView.findViewById(R.id.crime_recycler_view)
         crimeRecyclerView.layoutManager = LinearLayoutManager(activity)
-
-        updateUI()
+        crimeRecyclerView.adapter = CrimeAdapter(CrimeLab.crimes).also { adapter = it }
 
         return rootView
     }
 
-    private fun updateUI() {
-        val crimes = CrimeLab.crimes
-        adapter = CrimeAdapter(crimes)
-        crimeRecyclerView.adapter = adapter
+    override fun onResume() {
+        super.onResume()
+
+        adapter.notifyDataSetChanged()
     }
 
-    private class CrimeViewHolder(itemView: View) :
+    private class CrimeViewHolder(itemView: View, context: Context) :
         RecyclerView.ViewHolder(itemView) {
 
         private var titleTextView: TextView = itemView.findViewById(R.id.crime_title)
@@ -52,11 +45,7 @@ class CrimeListFragment : Fragment() {
 
         init {
             itemView.setOnClickListener {
-                Toast.makeText(
-                    itemView.context,
-                    crime.title + "CLICKED",
-                    Toast.LENGTH_SHORT
-                ).show()
+                context.startActivity(CrimeActivity.newIntent(context, crimeId = crime.id))
             }
         }
 
@@ -74,7 +63,7 @@ class CrimeListFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeViewHolder {
             val itemView =
                 LayoutInflater.from(parent.context).inflate(R.layout.list_item_crime, parent, false)
-            return CrimeViewHolder(itemView)
+            return CrimeViewHolder(itemView, parent.context)
         }
 
         override fun getItemCount(): Int = crimes.size
