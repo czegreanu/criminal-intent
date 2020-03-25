@@ -7,7 +7,7 @@ object CrimeLab {
 
     init {
         for (i in 1..100) {
-            crimes.add(Crime("Crime #$i", i % 2 == 0))
+            crimes.add(Crime("Crime #$i", i % 2 == 0, i % 3 == 0))
         }
     }
 
