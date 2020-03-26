@@ -3,11 +3,15 @@ package zegreanu.cristi.criminalintent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import java.util.UUID
 
 class CrimePagerActivity : AppCompatActivity() {
+    private lateinit var firstButton: Button
+    private lateinit var lastButton: Button
     private lateinit var viewPager: ViewPager2
     private var crimes = arrayListOf<Crime>()
 
@@ -21,6 +25,35 @@ class CrimePagerActivity : AppCompatActivity() {
 
         viewPager.adapter = CrimeSlidePagerAdapter(crimes, this)
         viewPager.currentItem = crimes.indexOf(CrimeLab[crimeId])
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+                if (position == 0)
+                    firstButton.visibility = View.GONE
+                else
+                    firstButton.visibility = View.VISIBLE
+
+                if (position == crimes.size - 1)
+                    lastButton.visibility = View.GONE
+                else
+                    lastButton.visibility = View.VISIBLE
+            }
+        })
+
+        firstButton = findViewById(R.id.first_button)
+        firstButton.setOnClickListener {
+            viewPager.currentItem = 0
+        }
+
+        lastButton = findViewById(R.id.last_button)
+        lastButton.setOnClickListener {
+            viewPager.currentItem = crimes.size - 1
+        }
     }
 
     companion object {
