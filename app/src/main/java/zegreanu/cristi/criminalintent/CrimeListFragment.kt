@@ -11,9 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class CrimeListFragment : Fragment() {
+class CrimeListFragment : Fragment(), OnItemClickListener {
     private lateinit var crimeRecyclerView: RecyclerView
     private lateinit var adapter: CrimeAdapter
+    var positionClicked: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +25,7 @@ class CrimeListFragment : Fragment() {
 
         crimeRecyclerView = rootView.findViewById(R.id.crime_recycler_view)
         crimeRecyclerView.layoutManager = LinearLayoutManager(activity)
-        crimeRecyclerView.adapter = CrimeAdapter(CrimeLab.crimes).also { adapter = it }
+        crimeRecyclerView.adapter = CrimeAdapter(CrimeLab.crimes, this).also { adapter = it }
 
         return rootView
     }
@@ -32,7 +33,12 @@ class CrimeListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemChanged(positionClicked)
+    }
+
+    override fun onItemClicked(crime: Crime, position: Int) {
+        startActivity(activity?.let { CrimeActivity.newIntent(it, crimeId = crime.id) })
+        positionClicked = position
     }
 
     private class CrimeViewHolder(itemView: View, context: Context) :
@@ -43,21 +49,21 @@ class CrimeListFragment : Fragment() {
         private var solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
         private lateinit var crime: Crime
 
-        init {
-            itemView.setOnClickListener {
-                context.startActivity(CrimeActivity.newIntent(context, crimeId = crime.id))
-            }
-        }
-
-        fun bind(crimeItem: Crime) {
+        fun bind(crimeItem: Crime, clickListener: OnItemClickListener) {
             crime = crimeItem
             titleTextView.text = crime.title
             dateTextView.text = crime.date.toString()
             solvedImageView.visibility = if (crime.solved) View.VISIBLE else View.GONE
+            itemView.setOnClickListener {
+                clickListener.onItemClicked(crime, adapterPosition)
+            }
         }
     }
 
-    private class CrimeAdapter(private val crimes: List<Crime>) :
+    private class CrimeAdapter(
+        private val crimes: List<Crime>,
+        val itemClickListener: OnItemClickListener
+    ) :
         RecyclerView.Adapter<CrimeViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeViewHolder {
@@ -69,7 +75,11 @@ class CrimeListFragment : Fragment() {
         override fun getItemCount(): Int = crimes.size
 
         override fun onBindViewHolder(holder: CrimeViewHolder, position: Int) {
-            holder.bind(crimes[position])
+            holder.bind(crimes[position], itemClickListener)
         }
     }
+}
+
+interface OnItemClickListener {
+    fun onItemClicked(crime: Crime, position: Int)
 }
