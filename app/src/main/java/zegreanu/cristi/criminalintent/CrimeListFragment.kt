@@ -45,7 +45,7 @@ class CrimeListFragment : Fragment() {
 
         init {
             itemView.setOnClickListener {
-                context.startActivity(CrimeActivity.newIntent(context, crimeId = crime.id))
+                context.startActivity(CrimePagerActivity.newIntent(context, crimeId = crime.id))
             }
         }
 
